@@ -66,7 +66,8 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 
   # Shared module for all request specs in the RSpec configuration block
-  config.include RequestSpecHelper, type: :request
+  config.include RequestSpecHelper
+  config.include ControllerSpecHelper
 
   # add `FactoryBot` methods
   config.include FactoryBot::Syntax::Methods
