@@ -3,14 +3,16 @@ require 'rails_helper'
 RSpec.describe 'Items API', type: :request do
   # initialize test data
 
-  let!(:todo) { create(:todo) }
+  let(:user) { create(:user) }
+  let!(:todo) { create(:todo, created_by: user.id) }
   let!(:items) { create_list(:item, 20, todo_id: todo.id) }
   let(:todo_id) { todo.id }
   let(:item_id) { items.first.id }
+  let(:headers) { valid_headers }
 
   # Test suite for GET /todos/:todo_id/items
   describe 'GET /todos/:todo_id/items' do
-    before { get "/todos/#{todo_id}/items"}
+    before { get "/todos/#{todo_id}/items", params: {}, headers: headers}
 
     context 'when todo exists' do
       it 'returns status code 200' do
@@ -37,7 +39,7 @@ RSpec.describe 'Items API', type: :request do
 
   # Test suite for GET /todos/:todo_id/items/:item_id
   describe 'GET /todos/:todo_id/items/:item_id' do
-    before { get "/todos/#{todo_id}/items/#{item_id}" }
+    before { get "/todos/#{todo_id}/items/#{item_id}", params: {}, headers: headers }
 
     context 'when todo item exists' do
       it 'returns status code 200' do
@@ -64,10 +66,10 @@ RSpec.describe 'Items API', type: :request do
 
   # Test suite for POST /todos/:todo_id/items
   describe 'POST /todos/:todo_id/items' do
-    let(:valid_attributes) { { name: "Ill kill you", done: false, todo_id: todo_id } }
+    let(:valid_attributes) { { name: "Ill kill you", done: false }.to_json }
 
     context 'when request attributes are valid' do
-      before { post "/todos/#{todo_id}/items", params: valid_attributes }
+      before { post "/todos/#{todo_id}/items", params: valid_attributes, headers: headers }
  
 
       it 'returns status code 201' do
@@ -76,7 +78,7 @@ RSpec.describe 'Items API', type: :request do
     end
 
     context 'when an invalid request' do
-      before { post "/todos/#{todo_id}/items", params: {} }
+      before { post "/todos/#{todo_id}/items", params: {}, headers: headers }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -90,8 +92,8 @@ RSpec.describe 'Items API', type: :request do
 
   # Test suite for PUT /todos/:todo_id/items/:item_id
   describe 'PUT /todos/:todo_id/items/:item_id' do
-    let(:valid_attributes) { {name: 'Cthulhu'} }
-    before { put "/todos/#{todo_id}/items/#{item_id}", params: valid_attributes }
+    let(:valid_attributes) { {name: 'Cthulhu'}.to_json }
+    before { put "/todos/#{todo_id}/items/#{item_id}", params: valid_attributes, headers: headers }
 
     context 'when item exists' do
       it 'returns status code 204' do
@@ -119,7 +121,7 @@ RSpec.describe 'Items API', type: :request do
 
   # Test suite for DELETE /todos/:todo_id/items/:item_id
   describe 'DELETE /todos/:todo_id/items/:item_id' do
-    before { delete "/todos/#{todo_id}/items/#{item_id}" }
+    before { delete "/todos/#{todo_id}/items/#{item_id}", params: {}, headers: headers }
 
     context 'when item exists' do
       it 'returns status code 204' do
